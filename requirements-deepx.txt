@@ -1,0 +1,9 @@
+numpy>=1.26
+opencv-python>=4.8,<5
+fastapi
+uvicorn
+cryptography
+psutil>=5.9.0
+Pillow
+piper-tts
+pygrabber; platform_system == "Windows"

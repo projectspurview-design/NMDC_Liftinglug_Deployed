@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8ebe7">
+  <title>NMDC Detection Monitor</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      color: #202725;
+      background: #e8ebe7;
+      font-synthesis: none;
+      --ink: #202725;
+      --muted: #69736e;
+      --line: #d3d9d4;
+      --paper: #f8faf7;
+      --green: #17684d;
+      --red: #b5362d;
+      --amber: #e1a332;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 70% 0%, #f7f8f3 0, #e8ebe7 58%); }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 5vw; border-bottom: 1px solid var(--line); background: rgba(248,250,247,.82); }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 750; letter-spacing: .02em; }
+    .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; background: var(--green); color: white; font-size: 12px; font-weight: 800; border-radius: 6px; }
+    .topbar-meta { display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 12px; }
+    .topbar a { color: inherit; text-decoration: none; border-bottom: 1px solid #aeb8b1; padding-bottom: 2px; }
+    .topbar button { padding: 8px 12px; background: transparent; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); }
+    main { width: min(1320px, 92vw); margin: 34px auto 48px; }
+    .heading { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 20px; }
+    .eyebrow { margin: 0 0 7px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); line-height: 1.1; letter-spacing: 0; }
+    .updated { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(270px, .75fr); gap: 18px; align-items: start; }
+    .view { overflow: hidden; background: #202725; border-radius: 7px; box-shadow: 0 12px 32px #26352d16; }
+    .view-head { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; color: #f3f5f2; font-size: 12px; }
+    .live { display: inline-flex; align-items: center; gap: 7px; color: #d8e2dc; }
+    .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #d4d8d5; }
+    .live.on::before { background: #72d19d; box-shadow: 0 0 0 3px #72d19d30; }
+    .frame { aspect-ratio: 16 / 9; display: grid; place-items: center; position: relative; overflow: hidden; background-color: #222927; background-image: linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px); background-size: 36px 36px; }
+    .frame img { width: 100%; height: 100%; display: block; object-fit: contain; }
+    .frame-empty { max-width: 290px; padding: 22px; color: #c5cfca; text-align: center; font-size: 13px; line-height: 1.6; }
+    .frame-empty strong { display: block; margin-bottom: 5px; color: #f4f6f3; font-size: 15px; }
+    .view-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px; color: #cbd4ce; font-size: 11px; }
+    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 7px; }
+    .readiness { padding: 17px 18px; border-top: 4px solid #909a94; }
+    .readiness.ready { border-top-color: var(--green); }
+    .readiness.blocked { border-top-color: var(--red); }
+    .readiness h2 { margin: 0 0 5px; font-size: 12px; color: var(--muted); font-weight: 700; }
+    .readiness-value { margin: 0; font-size: 25px; line-height: 1.2; font-weight: 800; }
+    .readiness-note { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .section-title { margin: 20px 0 9px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #59645e; }
+    .checks { display: grid; grid-template-columns: 1fr; }
+    .check { display: flex; justify-content: space-between; align-items: center; padding: 12px 13px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .check:last-child { border-bottom: 0; }
+    .check-label { display: flex; align-items: center; gap: 9px; }
+    .check-dot { width: 9px; height: 9px; border-radius: 50%; background: #aab2ad; }
+    .check.active .check-dot { background: var(--green); }
+    .check-value { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .details { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; overflow: hidden; background: var(--line); border: 1px solid var(--line); border-radius: 6px; }
+    .detail { min-height: 64px; padding: 11px 13px; background: var(--paper); }
+    .detail-label { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+    .detail-value { display: block; margin-top: 6px; font-size: 14px; font-weight: 750; overflow-wrap: anywhere; }
+    .alert { margin-top: 18px; padding: 14px 16px; border-left: 4px solid var(--amber); background: #fff7e7; color: #493816; font-size: 13px; line-height: 1.5; }
+    .alert.error { border-color: var(--red); background: #fff0ed; color: #702a24; }
+    .login-wrap { width: min(420px, 100%); margin: 7vh auto; }
+    .login-panel { padding: 27px; }
+    .login-panel h1 { font-size: 26px; }
+    .login-panel p { margin: 9px 0 22px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .field { display: grid; gap: 7px; margin: 14px 0; }
+    .field label { color: #4b5650; font-size: 12px; font-weight: 700; }
+    .field input { width: 100%; padding: 11px 12px; border: 1px solid #c5cec7; border-radius: 5px; background: white; color: var(--ink); outline-color: var(--green); }
+    .submit { width: 100%; margin-top: 7px; padding: 11px 14px; border: 0; border-radius: 5px; background: var(--green); color: white; font-weight: 750; }
+    .error-message { min-height: 19px; margin: 12px 0 0 !important; color: var(--red) !important; }
+    [hidden] { display: none !important; }
+    @media (max-width: 780px) {
+      .topbar { height: 60px; padding: 0 4vw; }
+      .topbar-meta { gap: 9px; }
+      main { width: 92vw; margin-top: 24px; }
+      .heading { align-items: start; flex-direction: column; }
+      .layout { grid-template-columns: 1fr; }
+      .panel { margin-bottom: 2px; }
+      .frame { aspect-ratio: 4 / 3; }
+    }
+    @media (max-width: 420px) {
+      .topbar-meta #docs-link { display: none; }
+      .brand { font-size: 12px; }
+      .topbar button { padding: 7px 9px; }
+      .view-foot { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">NM</span><span>NMDC <span style="font-weight:500;color:#69736e">/ Detection Monitor</span></span></div>
+    <div class="topbar-meta"><a id="docs-link" href="#" target="_blank" rel="noreferrer">API docs</a><span id="account-label"></span><button id="logout-button" type="button" hidden>Sign out</button></div>
+  </header>
+  <main>
+    <section id="login-view" class="login-wrap" hidden>
+      <div class="panel login-panel">
+        <p class="eyebrow">Live system check</p>
+        <h1>Detection monitor</h1>
+        <p>Sign in with your detector account to inspect the live annotated feed and current detection states.</p>
+        <form id="login-form">
+          <div class="field"><label for="license-id">License ID</label><input id="license-id" name="license_id" autocomplete="username" required></div>
+          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+          <button class="submit" type="submit">Sign in</button>
+          <p id="login-error" class="error-message" role="alert"></p>
+        </form>
+      </div>
+    </section>
+    <section id="monitor-view" hidden>
+      <div class="heading">
+        <div><p class="eyebrow">Detection features</p><h1>Live inspection</h1></div>
+        <div id="updated-at" class="updated">Waiting for detector status</div>
+      </div>
+      <div class="layout">
+        <div>
+          <section class="view" aria-label="Live annotated camera feed">
+            <div class="view-head"><span>Annotated camera feed</span><span id="live-state" class="live">CONNECTING</span></div>
+            <div class="frame"><div id="frame-empty" class="frame-empty"><strong>Waiting for camera frame</strong>Connect a configured camera to see detections and overlay boxes.</div><img id="stream-image" alt="Live camera feed with detection overlays" hidden></div>
+            <div class="view-foot"><span id="camera-source">Camera source unavailable</span><span>Overlay: cavity / hook / lock</span></div>
+          </section>
+          <p id="alert-message" class="alert" role="status">Waiting for detector status.</p>
+        </div>
+        <aside>
+          <section id="readiness" class="panel readiness">
+            <h2>Lift readiness signal</h2><p id="readiness-value" class="readiness-value">UNVERIFIED</p>
+            <p class="readiness-note">Visual indication only. This is not a certified lifting safety interlock or authorization to lift.</p>
+          </section>
+          <h2 class="section-title">Detected features</h2>
+          <section class="panel checks" aria-label="Detection feature states">
+            <div class="check" data-check="cavity"><span class="check-label"><i class="check-dot"></i>Cavity / lug</span><span class="check-value">Waiting</span></div>
+            <div class="check" data-check="hook"><span class="check-label"><i class="check-dot"></i>Hook</span><span class="check-value">Waiting</span></div>
+            <div class="check" data-check="lock"><span class="check-label"><i class="check-dot"></i>Lock</span><span class="check-value">Waiting</span></div>
+          </section>
+          <h2 class="section-title">System details</h2>
+          <section class="details">
+            <div class="detail"><span class="detail-label">Camera</span><strong id="camera-state" class="detail-value">Unknown</strong></div>
+            <div class="detail"><span class="detail-label">Position</span><strong id="position-state" class="detail-value">Unknown</strong></div>
+            <div class="detail"><span class="detail-label">Inference</span><strong id="inference-state" class="detail-value">Unknown</strong></div>
+            <div class="detail"><span class="detail-label">Speed</span><strong id="speed-state" class="detail-value">-- FPS</strong></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <script>
+    const loginView = document.querySelector("#login-view");
+    const monitorView = document.querySelector("#monitor-view");
+    const loginForm = document.querySelector("#login-form");
+    const loginError = document.querySelector("#login-error");
+    const streamImage = document.querySelector("#stream-image");
+    const frameEmpty = document.querySelector("#frame-empty");
+    let csrfToken = "";
+    let pollTimer;
+
+    const apiDocsPort = Number(location.port || 80) + 1;
+    document.querySelector("#docs-link").href = `${location.protocol}//${location.hostname}:${apiDocsPort}/docs`;
+
+    async function request(path, options = {}) {
+      const response = await fetch(path, {
+        credentials: "same-origin",
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || `Request failed (${response.status})`);
+      }
+      return response.status === 204 ? null : response.json();
+    }
+
+    function setFeature(name, detected) {
+      const row = document.querySelector(`[data-check="${name}"]`);
+      row.classList.toggle("active", Boolean(detected));
+      row.querySelector(".check-value").textContent = detected ? "Detected" : "Not detected";
+    }
+
+    function showMonitor(user) {
+      loginView.hidden = true;
+      monitorView.hidden = false;
+      document.querySelector("#account-label").textContent = user.license_id;
+      document.querySelector("#logout-button").hidden = false;
+      frameEmpty.hidden = true;
+      streamImage.hidden = false;
+      streamImage.src = `/stream?session=${Date.now()}`;
+      clearInterval(pollTimer);
+      refreshStatus();
+      pollTimer = setInterval(refreshStatus, 1000);
+    }
+
+    function showLogin() {
+      clearInterval(pollTimer);
+      monitorView.hidden = true;
+      loginView.hidden = false;
+      document.querySelector("#account-label").textContent = "";
+      document.querySelector("#logout-button").hidden = true;
+      streamImage.removeAttribute("src");
+      streamImage.hidden = true;
+      frameEmpty.hidden = false;
+    }
+
+    async function refreshStatus() {
+      try {
+        const [status, health] = await Promise.all([request("/status"), request("/health")]);
+        const connected = Boolean(health.camera_connected);
+        const liveState = document.querySelector("#live-state");
+        liveState.textContent = connected ? "LIVE" : health.retrying ? "RECONNECTING" : "OFFLINE";
+        liveState.classList.toggle("on", connected && health.frame_ready);
+        document.querySelector("#camera-source").textContent = health.camera_source || "No active camera source";
+        document.querySelector("#camera-state").textContent = connected ? "Connected" : health.retrying ? "Retrying" : "Offline";
+        document.querySelector("#position-state").textContent = (status.state || status.state_key || "Unknown").replaceAll("_", " ");
+        document.querySelector("#inference-state").textContent = status.inference_backend || "Unknown";
+        document.querySelector("#speed-state").textContent = Number.isFinite(status.inference_fps) ? `${status.inference_fps} FPS` : "-- FPS";
+        document.querySelector("#updated-at").textContent = `Updated ${new Date().toLocaleTimeString()}`;
+        setFeature("cavity", status.cavity_detected);
+        setFeature("hook", status.hook_detected);
+        setFeature("lock", status.lock_detected);
+
+        const ready = Boolean(status.lift_ready);
+        const readiness = document.querySelector("#readiness");
+        readiness.classList.toggle("ready", ready);
+        readiness.classList.toggle("blocked", !ready && Boolean(status.lock_detected || status.hook_detected));
+        document.querySelector("#readiness-value").textContent = ready ? "READY SIGNAL" : "DO NOT LIFT";
+        const message = status.alert_main || status.alert_state || status.status || health.camera_error || "No detection alert.";
+        const alert = document.querySelector("#alert-message");
+        alert.textContent = message;
+        alert.classList.toggle("error", !connected || !health.frame_ready);
+      } catch (error) {
+        document.querySelector("#live-state").textContent = "UNAVAILABLE";
+        document.querySelector("#live-state").classList.remove("on");
+        document.querySelector("#alert-message").textContent = error.message;
+        document.querySelector("#alert-message").classList.add("error");
+      }
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginError.textContent = "";
+      const fields = new FormData(loginForm);
+      try {
+        const result = await request("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ license_id: fields.get("license_id"), password: fields.get("password") }),
+        });
+        csrfToken = result.csrf_token;
+        loginForm.reset();
+        showMonitor(result.user);
+      } catch (error) {
+        loginError.textContent = error.message;
+      }
+    });
+
+    document.querySelector("#logout-button").addEventListener("click", async () => {
+      try {
+        await request("/api/auth/logout", { method: "POST", headers: { "X-CSRF-Token": csrfToken } });
+      } finally {
+        csrfToken = "";
+        showLogin();
+      }
+    });
+
+    request("/api/auth/me").then((result) => {
+      csrfToken = result.csrf_token;
+      showMonitor(result.user);
+    }).catch(showLogin);
+  </script>
+</body>
+</html>

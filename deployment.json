@@ -1,0 +1,27 @@
+{
+  "backend": "deepx",
+  "decoder": "hardware",
+  "recording_root": "recordings",
+  "recording_mode": "continuous",
+  "retention_days": 15,
+  "event_retention_days": 365,
+  "reserve_percent": 10,
+  "segment_seconds": 120,
+  "analysis_fps": 5,
+  "stale_seconds": 2,
+  "main_path": "/axis-media/media.amp?streamprofile=Profile_1",
+  "analysis_path": "/axis-media/media.amp?streamprofile=Profile_1",
+  "camera_profiles": {},
+  "areas": {
+    "1": {
+      "name": "Area 1",
+      "train_id": "1",
+      "bays": ["Bay-01", "Bay-02", "Bay-03", "Bay-04"]
+    },
+    "2": {
+      "name": "Area 2",
+      "train_id": "2",
+      "bays": ["Bay-05", "Bay-06", "Bay-07", "Bay-08"]
+    }
+  }
+}
