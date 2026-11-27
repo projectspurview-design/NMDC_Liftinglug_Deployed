@@ -2,16 +2,25 @@
 set -eu
 
 APP_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PYTHON="$APP_DIR/.venv-linux/bin/python"
 CONFIG_FILE=${XDG_CONFIG_HOME:-"$HOME/.config"}/nmdc-hook-detector/environment
-
-if [ ! -x "$PYTHON" ]; then
-    printf '%s\n' "App environment is missing. Run sh $APP_DIR/install_linux.sh first." >&2
-    exit 1
-fi
 
 if [ -f "$CONFIG_FILE" ]; then
     . "$CONFIG_FILE"
+fi
+
+PYTHON=${NMDC_PYTHON:-}
+if [ -z "$PYTHON" ]; then
+    for candidate in "$APP_DIR/.venv/bin/python" "$APP_DIR/.venv-linux/bin/python"; do
+        if [ -x "$candidate" ] && "$candidate" -c 'import dx_engine' >/dev/null 2>&1; then
+            PYTHON=$candidate
+            break
+        fi
+    done
+fi
+
+if [ -z "$PYTHON" ] || [ ! -x "$PYTHON" ] || ! "$PYTHON" -c 'import dx_engine' >/dev/null 2>&1; then
+    printf '%s\n' "DEEPX DX-RT Python runtime was not found. Set NMDC_PYTHON to its Python executable in $CONFIG_FILE." >&2
+    exit 1
 fi
 
 if ! command -v xdg-open >/dev/null 2>&1; then
@@ -19,7 +28,7 @@ if ! command -v xdg-open >/dev/null 2>&1; then
     exit 1
 fi
 
-PREFERRED_PORT=${NMDC_HOOK_PORT:-8001}
+PREFERRED_PORT=${NMDC_HOOK_PORT:-8004}
 PORT_RESULT=$("$PYTHON" - "$PREFERRED_PORT" <<'PY'
 import socket
 import sys
@@ -35,12 +44,12 @@ if not 1 <= preferred <= 65535:
     raise SystemExit("NMDC_HOOK_PORT must be a number from 1 to 65535.")
 
 for port in range(preferred, min(preferred + 21, 65535)):
-    docs_url = f"http://127.0.0.1:{port + 1}/docs"
+    app_url = f"http://127.0.0.1:{port + 1}/"
     try:
-        with urllib.request.urlopen(docs_url, timeout=1) as response:
+        with urllib.request.urlopen(app_url, timeout=1) as response:
             page = response.read().decode("utf-8", errors="replace")
-        if "swagger-ui" in page:
-            print(f"running:{port}")
+        if '<div id="root"></div>' in page:
+            print(f"running:{port + 1}")
             raise SystemExit(0)
     except urllib.error.HTTPError:
         pass
@@ -70,13 +79,12 @@ case "$PORT_RESULT" in
     *) printf '%s\n' "$PORT_RESULT" >&2; exit 1 ;;
 esac
 
-BACKEND_URL="http://127.0.0.1:$PORT"
-DOCS_URL="http://127.0.0.1:$((PORT + 1))/docs"
+APP_URL="http://127.0.0.1:$((PORT + 1))/"
 "$PYTHON" "$APP_DIR/app.py" --host 127.0.0.1 --port "$PORT" &
 APP_PID=$!
 trap 'kill "$APP_PID" 2>/dev/null || true' EXIT INT TERM
 
-"$PYTHON" - "$DOCS_URL" "$APP_PID" <<'PY'
+"$PYTHON" - "$APP_URL" "$APP_PID" <<'PY'
 import os
 import subprocess
 import sys
@@ -93,13 +101,13 @@ for _ in range(30):
     try:
         with urllib.request.urlopen(url, timeout=1) as response:
             page = response.read().decode("utf-8", errors="replace")
-        if "swagger-ui" in page:
+        if '<div id="root"></div>' in page:
             break
     except Exception:
         pass
     time.sleep(1)
 else:
-    raise SystemExit(f"Interactive API docs did not start at {url}.")
+    raise SystemExit(f"The frontend did not start at {url}.")
 
 subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 PY

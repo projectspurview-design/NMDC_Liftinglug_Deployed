@@ -1,4 +1,5 @@
 import json
+import sqlite3
 from datetime import datetime, time, timedelta, timezone
 from types import SimpleNamespace
 from urllib.error import HTTPError
@@ -18,6 +19,42 @@ ADMIN_ID = "nmdc-admin"
 ADMIN_PASSWORD = "admin-password-strong"
 VIEWER_ID = "bay-viewer"
 VIEWER_PASSWORD = "viewer-password-strong"
+
+
+def test_relative_auth_data_dir_survives_working_directory_change(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    store = AuthStore("auth", cookie_secure=False)
+
+    assert store.path == (tmp_path / "auth" / "auth.sqlite3").resolve()
+
+    monkeypatch.chdir(tmp_path.parent)
+    assert store.get_session("unknown-token") is None
+
+
+def test_auth_connection_error_reports_database_path_and_directory_state(tmp_path, monkeypatch):
+    store = AuthStore(tmp_path, cookie_secure=False)
+
+    def fail_to_connect(*args, **kwargs):
+        raise sqlite3.OperationalError("unable to open database file")
+
+    monkeypatch.setattr(sqlite3, "connect", fail_to_connect)
+    with pytest.raises(sqlite3.OperationalError) as error:
+        with store._connect():
+            pass
+
+    assert str(store.path) in str(error.value)
+    assert "data directory exists: True" in str(error.value)
+    assert "data directory accessible: True" in str(error.value)
+
+
+def test_auth_connection_is_closed_after_context(tmp_path):
+    store = AuthStore(tmp_path, cookie_secure=False)
+
+    with store._connect() as database:
+        database.execute("SELECT 1")
+
+    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+        database.execute("SELECT 1")
 
 
 def test_initial_admin_is_hashed_and_bootstrap_is_one_time(tmp_path):

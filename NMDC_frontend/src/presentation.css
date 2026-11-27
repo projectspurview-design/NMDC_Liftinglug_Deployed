@@ -1,0 +1,508 @@
+/* Shared visual finish. Operational layout, detection colors and video rendering
+   remain owned by the monitoring components and existing responsive grid. */
+:root {
+  color-scheme: dark;
+  --ui-surface: #101b2b;
+  --ui-edge: #2b3c52;
+  --ui-muted: #9baec5;
+  --ui-accent: #6ed6ee;
+  --workspace-padding: 8px;
+}
+body {
+  background: radial-gradient(ellipse at 24% 0, #182c40, transparent 58%), #0a121f;
+  color: #edf3fa;
+  font-size: 14px;
+}
+button, input, select { font-family: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline-color: var(--ui-accent); }
+button:disabled { cursor: not-allowed; }
+::selection { color: #fff; background: #245370; }
+* { scrollbar-width: thin; scrollbar-color: #3a526c #0b1320; }
+
+/* One consistent 76px navigation bar throughout the application. */
+html:has(.app-header) { scroll-padding-top: 76px; }
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(100deg, #132136, #0e1826 70%);
+  border-bottom: 1px solid #314055;
+  box-shadow: 0 1px 0 rgba(255,255,255,.025) inset, 0 4px 18px rgba(0,0,0,.15);
+}
+.app-header-logo { object-fit: contain; background: #fff; padding: 5px; border-radius: 8px; border: 1px solid #d5deeb; }
+.app-header-home { display: inline-flex; flex: none; border-radius: 8px; }
+.app-header-home .app-header-logo { transition: border-color 170ms ease, box-shadow 170ms ease; }
+.app-header-home:is(:hover, :focus-visible) .app-header-logo { border-color: var(--ui-accent); box-shadow: 0 0 0 2px #6ed6ee40; }
+.app-header-title { margin: 0; color: #eef5fc; line-height: 1.25; font-weight: 600; }
+.app-header-nav { display: flex; align-items: center; justify-content: flex-end; }
+.app-header-nav a { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px; color: #b6c5d8; text-decoration: none; border: 1px solid transparent; border-radius: 7px; font-weight: 550; }
+.app-header .app-header-nav a[aria-current="page"] { color: #a8efff !important; background: #183246 !important; border-color: #315970 !important; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset; }
+.app-header-nav a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 7px;
+  bottom: 2px;
+  height: 1px;
+  background: var(--ui-accent);
+  opacity: 0;
+  transform: scaleX(.2);
+  transition: opacity 170ms ease, transform 240ms var(--ease-out);
+  pointer-events: none;
+}
+.app-header-nav a svg, .app-header-nav button svg { transition: transform 240ms var(--ease-out), color 160ms ease; }
+.app-header-nav a:is([aria-current="page"], :focus-visible)::after { opacity: .8; transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  .app-header .app-header-nav a:hover { color: #e2f8ff !important; background: #1a3043 !important; border-color: #4d7693 !important; transform: none; box-shadow: 0 3px 12px #07121e55; opacity: 1; }
+  .app-header-nav a:hover::after { opacity: .9; transform: scaleX(1); }
+  .app-header-nav :is(a, button:enabled):hover > svg { transform: translateY(-1px); color: var(--ui-accent); }
+  .app-header .app-header-nav :is(.utility-button, .profile-trigger):enabled:hover { border-color: #6296b4 !important; transform: none; box-shadow: 0 3px 12px #07121e55; }
+}
+.profile-trigger { color: #c7e4f0; background: #172a3d; border: 1px solid #3a526d; border-radius: 8px; min-height: 34px; }
+.profile-trigger:hover { background: #213c52 !important; }
+.profile-menu { color: #edf5ff; background: #152337; border-color: #3c5068; box-shadow: 0 16px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04); }
+.profile-caption { color: #9eb3c9; border-bottom-color: #33465b; }
+.profile-menu button { color: #dbe9f7; }
+.profile-menu button:hover { background: #25425c !important; transform: none; box-shadow: none; }
+.profile-menu strong { font-size: 14px; letter-spacing: .01em; }
+
+.workspace-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 12px;
+  min-height: 68px;
+  margin-bottom: 8px;
+  padding: 8px 14px;
+  border: 1px solid #365871;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at top left, #20434f, transparent 75%), #111f34;
+}
+.workspace-heading h1 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: clamp(19px, 1.8vw, 27px); line-height: 1.15; letter-spacing: -.035em; }
+.workspace-heading h1 svg { flex: none; width: 20px; height: 20px; color: #75e4d6; }
+.workspace-heading p { margin: 3px 0 0; color: #b3cadf; font-size: 12px; line-height: 1.3; }
+.workspace-heading-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 4px 9px;
+  border: 1px solid #3e5b70;
+  border-radius: 99px;
+  color: #c4d8e9;
+  font-size: 12px;
+  line-height: 1.25;
+}
+.workspace-heading-status > svg { width: 14px; height: 14px; }
+.workspace-action {
+  display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px;
+  border: 1px solid #53778e; border-radius: 8px; background: #1b3b50; color: #d9effb;
+  font-size: 13px; cursor: pointer;
+}
+.workspace-action:enabled:hover { background: #28546a; border-color: #86c8d8 !important; }
+.workspace-action:disabled { opacity: .55; }
+
+/* Camera pairs read as a uniform wall of monitors, without a second frame. */
+.dashboard-grid .bay-camera-pair {
+  outline: 1px solid #3a4a5f;
+  outline-offset: 0;
+  border-radius: 9px;
+  background: #0b1420;
+  box-shadow: 0 2px 8px rgba(0,0,0,.24);
+  animation: console-enter .45s var(--ease-out) backwards;
+}
+.dashboard-grid .bay-camera-pair:nth-child(2n) { animation-delay: .035s; }
+.dashboard-grid .bay-camera-pair:nth-child(n+5) { animation-delay: .07s; }
+.dashboard-grid .bay-camera-pair:hover, .dashboard-grid .bay-camera-pair:focus-within { outline-color: #74bed3; box-shadow: 0 0 0 1px rgba(110,214,238,.12), 0 4px 14px rgba(0,0,0,.35); }
+.dashboard-grid .camera-tile { border-color: transparent; border-radius: 8px; animation: none; }
+.dashboard-grid .camera-tile:hover { border-color: rgba(110,214,238,.65); }
+.dashboard-grid .camera-tile .bay-card-camera-heading { padding: 5px 8px; background: rgba(5,13,23,.72); font-size: clamp(10px, .85vw, 13px) !important; }
+.dashboard-grid .bay-card-camera-heading > span:first-child { font-weight: 600; letter-spacing: .02em; }
+.tile-connection-label { display: inline-flex; align-items: center; gap: 5px; }
+.tile-connection-label::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.bay-pair-label { padding: 4px 12px; background: #152538; border: 1px solid #40566c; border-bottom: 0; border-radius: 7px 7px 0 0; color: #e4f1fc; letter-spacing: .04em; font-weight: 600; }
+.dashboard-grid .bay-card-placeholder { color: #adbed0; opacity: 1 !important; justify-items: center; gap: 7px; font-size: clamp(9px, .85vw, 13px) !important; background: radial-gradient(ellipse at center, #14273a, #0c1624 80%); }
+.dashboard-grid .bay-card-placeholder svg { color: #526c87; }
+.dashboard-grid .bay-card-placeholder::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .2; background-image: linear-gradient(#38506a 1px, transparent 1px), linear-gradient(90deg, #38506a 1px, transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(ellipse, #000 52%, transparent 94%); }
+.dashboard-grid .bay-card-placeholder > * { position: relative; }
+
+/* Detail view controls and warnings stay above the moving camera image. */
+#root > :is(.dashboard-grid, .bay-monitor-page, .camera-settings-page, .performance-page, .engagement-page) {
+  padding: var(--workspace-padding);
+}
+.bay-monitor-grid { gap: 8px; }
+.bay-monitor-context { display: flex; align-items: center; flex: none; gap: 10px; padding: 0 5px 7px; }
+.bay-monitor-context a { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid #3a536e; border-radius: 6px; background: #15273c; color: #b6d9ee; text-decoration: none; font-size: 12px; }
+.bay-monitor-context a:hover { border-color: var(--ui-accent); color: #e6f8ff; }
+.bay-monitor-context h1 { margin: 0; color: #edf5ff; font-size: 18px; }
+.camera-viewer-heading { padding: 3px 4px 7px; }
+.camera-viewer-heading h2 { font-weight: 600; font-size: clamp(14px, 1.1vw, 18px); letter-spacing: -.02em; }
+.camera-connection-status { font-size: 12px; color: #bed0e4; }
+.camera-connection-status > span { box-shadow: 0 0 0 3px rgba(148,163,184,.08); }
+.camera-zoom { background: #142237; border-color: #3a4d63; box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
+.camera-zoom button { color: #cfdfef; }
+.camera-zoom button:enabled:hover { background: #29465d !important; transform: none; box-shadow: none; }
+.camera-viewer-viewport { isolation: isolate; }
+.camera-viewer-viewport[data-stream-connected="false"] { background: radial-gradient(ellipse at center, #192b40, #0d1725 76%) !important; }
+.camera-feed-placeholder { position: absolute; display: grid; justify-items: center; gap: 7px; max-width: 75%; text-align: center; color: #d2e3f3; }
+.camera-feed-placeholder-icon { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #4a6581; border-radius: 50%; background: #1a344a; color: #a5cadd; }
+.camera-feed-placeholder p { margin: 0; }
+.camera-feed-placeholder .camera-feed-placeholder-detail { color: #a7bbd0; font-size: 12px; }
+.camera-fullscreen-button { display: grid; place-items: center; width: 30px; height: 30px; padding: 5px; background: #15263b; color: #dceaf8; border: 1px solid #3a5069; border-radius: 7px; cursor: pointer; }
+.camera-fullscreen-button:hover { background: #26445d !important; transform: none; box-shadow: none; }
+.camera-viewer-viewport:fullscreen { width: 100vw !important; height: 100dvh !important; aspect-ratio: auto !important; background: #050b12 !important; border: 0 !important; border-radius: 0 !important; }
+.camera-fullscreen-exit { position: absolute; z-index: 5; bottom: 16px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; background: #132437; color: #e9f5ff; border: 1px solid #5e7892; border-radius: 8px; cursor: pointer; }
+.camera-fullscreen-exit:hover, .camera-fullscreen-exit:active { transform: translateX(-50%); background: #29445b !important; }
+.camera-view-error { margin: 3px 0; color: #fda4af; font-size: 12px; }
+.camera-viewer-viewport > .camera-text-overlay { background: none; gap: 10px; }
+.camera-text-overlay > .camera-alignment-text, .camera-text-overlay > .camera-alert-text { border-radius: 7px; padding: clamp(8px, .8vw, 13px); background: rgba(12,20,32,.91); border-width: 1px; border-left-width: 3px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+.camera-text-overlay span { font-size: clamp(10px, .8vw, 12px); letter-spacing: .08em; font-weight: 600; }
+.camera-text-overlay strong { font-size: clamp(15px, 1.4vw, 24px); line-height: 1.3; letter-spacing: -.025em; font-weight: 700; }
+.camera-viewer-viewport[data-glow="orange"] .camera-alert-text { border-color: #f59e0b; }
+.camera-viewer-viewport[data-glow="green"] .camera-alert-text { border-color: #22c55e; }
+.camera-viewer-viewport[data-glow="red"] .camera-alert-text { border-color: #f87171; }
+.camera-viewer-viewport[data-glow="orange"] .camera-alert-text > span { color: #fde68a; }
+.camera-viewer-viewport[data-glow="green"] .camera-alert-text > span { color: #86efac; }
+.hook-detection-indicator { border-color: #344b61; border-radius: 7px; }
+
+/* Camera setup uses the same surfaces and readable form controls as login. */
+.camera-settings-page { width: 100%; animation: console-enter .4s var(--ease-out) backwards; }
+.settings-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 10px 0 24px; }
+.settings-toolbar h1 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: clamp(23px, 2vw, 30px); font-weight: 600; letter-spacing: -.035em; }
+.settings-toolbar h1 svg { color: var(--ui-accent); }
+.settings-toolbar > label { width: 280px; margin-bottom: 0 !important; font-size: 12px; color: #a9bdd3; }
+.settings-toolbar select { background: #14253a !important; border-color: #3c526d !important; color: #edf7ff !important; min-height: 42px; font-size: 14px !important; }
+.settings-bay-panel { border: 1px solid #30445d !important; border-radius: 14px !important; background: #101d2d !important; box-shadow: 0 8px 26px rgba(0,0,0,.13); }
+.settings-bay-panel > h2 { color: #afc8df; font-size: 13px !important; letter-spacing: .08em; padding-bottom: 14px; border-bottom: 1px solid #283d52; }
+.settings-camera-card { padding: 18px !important; border-radius: 10px !important; background: #14243a !important; border-color: #324962 !important; box-shadow: 0 1px 0 rgba(255,255,255,.025) inset; }
+.settings-camera-card > h3 { display: flex; align-items: center; gap: 9px; font-size: 17px !important; font-weight: 600; }
+.settings-camera-card > h3 svg { color: #87bdd7; }
+.camera-connection-form { padding: 0 !important; margin-top: 22px !important; border: 0 !important; background: transparent !important; }
+.camera-connection-form label { display: block; font-size: 13px !important; font-weight: 500; color: #c5d5e6; }
+.camera-connection-form > div { gap: 16px !important; }
+.camera-connection-form input, .camera-connection-form select { min-height: 43px; padding: 10px 12px !important; margin-top: 7px !important; background: #0e1b2d !important; border-color: #405773 !important; font-size: 14px; color: #eef5fc; border-radius: 7px !important; }
+.camera-connection-form input:focus, .camera-connection-form select:focus { border-color: #6ed6ee !important; box-shadow: 0 0 0 3px rgba(110,214,238,.1); outline: none; }
+.camera-connection-form button { min-height: 38px; font-size: 13px; font-weight: 550; }
+.camera-connect-button { margin-top: 20px !important; padding: 10px 16px !important; background: #1d5d7b !important; border-color: #4b9cb6 !important; box-shadow: 0 1px 0 rgba(255,255,255,.12) inset; }
+.camera-connect-button:enabled:hover { background: #287896 !important; border-color: #78cadf !important; }
+.camera-reset-button { margin-top: 12px !important; background: #38212b !important; border-color: #80525b !important; color: #fecdd3 !important; }
+.camera-reset-button:enabled:hover { background: #502631 !important; }
+.camera-rescan-button { background: #233f57; color: #d8edff; border: 1px solid #4a6680; }
+.camera-rescan-button:hover { background: #315770 !important; }
+.camera-connection-form .camera-password-toggle:hover { transform: translateY(-50%); background: #20384f !important; box-shadow: none; }
+.camera-connection-form span[style*="line-height"] { font-size: 12px; color: #9eb3c9; }
+.camera-connection-form button:disabled { opacity: .5; transform: none; box-shadow: none; }
+.login-card { background: #122135; border-color: #3d5670; border-radius: 20px; box-shadow: 0 24px 70px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05) inset; }
+.login-symbol { background: #183e53; color: #8bdef3; }
+.account-form .primary-action { background: #1c6281; border-color: #58a9c3; box-shadow: inset 0 1px 0 rgba(255,255,255,.12); }
+.account-form .primary-action:hover { background: #2b819e !important; }
+.account-form input:focus-visible, .account-form select:focus-visible { outline-color: #6ed6ee; box-shadow: 0 0 0 3px rgba(110,214,238,.12); }
+.license-dialog { background: #122238; border-color: #435f7b; }
+@keyframes console-enter { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 760px) {
+  .app-header-nav a { gap: 4px; }
+  .app-header-nav a svg { width: 13px; height: 13px; }
+  .camera-viewer-heading { padding: 2px 1px 5px; }
+  .camera-fullscreen-button { width: 27px; height: 27px; }
+  .settings-toolbar { flex-direction: column; align-items: stretch; gap: 18px; margin-bottom: 20px; }
+  .settings-toolbar > label { width: 100%; max-width: none !important; }
+  .settings-camera-card { padding: 14px !important; }
+  .camera-text-overlay > .camera-alignment-text, .camera-text-overlay > .camera-alert-text { padding: 7px; }
+  .camera-text-overlay strong { font-size: 13px; }
+  .camera-text-overlay span { font-size: 9px; }
+}
+@media (max-height: 450px) {
+  .dashboard-grid .bay-card-placeholder svg { width: 14px; height: 14px; }
+  .dashboard-grid .bay-card-placeholder { gap: 3px; }
+  .dashboard-grid .camera-tile .bay-card-camera-heading { padding: 3px 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-grid .bay-camera-pair, .camera-settings-page { animation: none; }
+}
+
+/* Short transitions run on navigation or interaction, not on video frames. */
+@keyframes workspace-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes settings-change {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes menu-reveal {
+  from { opacity: 0; transform: translateY(-5px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dashboard-grid, .bay-monitor-page, .camera-settings-page {
+  animation: workspace-fade 320ms var(--ease-out) backwards;
+}
+.settings-bay-panel { animation: settings-change 280ms var(--ease-out) backwards; }
+.profile-menu { transform-origin: top right; animation: menu-reveal 180ms var(--ease-out) backwards; }
+.license-dialog[open] { animation: settings-change 220ms var(--ease-out) backwards; }
+.license-dialog::backdrop { animation: workspace-fade 220ms ease-out; }
+.settings-camera-card {
+  transition: border-color 220ms ease, box-shadow 260ms ease, background-color 220ms ease;
+}
+.settings-camera-card:focus-within {
+  border-color: #6699b6 !important;
+  box-shadow: 0 0 0 1px rgba(110,214,238,.1), 0 6px 18px rgba(0,0,0,.12);
+}
+.app-header-nav a, .profile-trigger {
+  transition: background-color 220ms ease, border-color 220ms ease, color 180ms ease, box-shadow 220ms ease;
+}
+.camera-zoom button, .camera-fullscreen-button {
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, transform 140ms ease;
+}
+.camera-zoom button:enabled:active, .camera-fullscreen-button:active { transform: scale(.94); }
+@media (hover: hover) and (pointer: fine) {
+  .settings-camera-card:hover { border-color: #517896 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-grid, .bay-monitor-page, .camera-settings-page,
+  .settings-bay-panel, .profile-menu, .license-dialog[open], .license-dialog::backdrop {
+    animation: none;
+  }
+}
+
+/* Optional operator tools: no additional polling or detector state changes. */
+.monitor-utilities { display: inline-flex; align-items: center; gap: 5px; position: relative; }
+.utility-button { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 5px; background: #14263a; color: #c1daec; border: 1px solid #3a526c; border-radius: 7px; cursor: pointer; }
+.utility-button:hover { background: #29465e !important; transform: none; box-shadow: none; }
+.utility-message { position: absolute; z-index: 30; top: calc(100% + 10px); right: 0; width: 220px; padding: 10px 12px; color: #e2edf8; background: #172b41; border: 1px solid #4a667f; border-radius: 8px; font-size: 12px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.controls-guide { width: min(520px, calc(100vw - 28px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; color: #edf5ff; background: #122137; border: 1px solid #425d77; border-radius: 16px; box-shadow: 0 20px 70px rgba(0,0,0,.4); }
+.controls-guide[open] { animation: settings-change 220ms var(--ease-out) backwards; }
+.controls-guide::backdrop { background: rgba(3,9,17,.7); backdrop-filter: blur(3px); }
+.controls-guide__heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.controls-guide__heading h2 { margin: 0; font-size: 21px; font-weight: 600; }
+.controls-guide dl { display: grid; gap: 18px; margin: 24px 0 0; }
+.controls-guide dl > div { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 5px 10px; }
+.controls-guide dl svg { grid-row: span 2; color: #7ac9e0; margin-top: 1px; }
+.controls-guide dt { font-size: 14px; font-weight: 600; }
+.controls-guide dd { margin: 0; color: #adc0d5; font-size: 13px; line-height: 1.6; }
+.controls-guide kbd { font: 11px 'Geist Mono', monospace; padding: 1px 5px; color: #e5f5ff; border: 1px solid #4c667e; border-radius: 4px; background: #1d344a; }
+.camera-action-note { position: absolute; z-index: 4; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 7px 11px; background: #142b3f; color: #b8f3dd; border: 1px solid #42715f; border-radius: 7px; font-size: 11px; white-space: nowrap; pointer-events: none; }
+.camera-fullscreen-button:disabled { opacity: .4; cursor: not-allowed; }
+.camera-fullscreen-button:disabled:hover { background: #15263b !important; transform: none; box-shadow: none; }
+.app-header .header-ai-button[aria-pressed="true"] { border-color: #7dd3fc; color: #bae6fd; background: #1e3a53; }
+.camera-ai-dialog {
+  box-sizing: border-box;
+  width: min(360px, calc(100% - 32px));
+  padding: 20px;
+  border: 1px solid #3a5069;
+  border-radius: 12px;
+  background: #15263b;
+  color: #dceaf8;
+}
+.camera-ai-dialog::backdrop { background: rgb(4 11 21 / 75%); }
+.camera-ai-dialog form, .camera-ai-dialog label { display: grid; gap: 10px; }
+.camera-ai-dialog input { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid #48647d; border-radius: 8px; color: #edf5ff; background: #0f1f32; }
+.camera-ai-dialog p { margin: 0; color: #fca5a5; }
+.camera-ai-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.camera-ai-dialog-actions button { padding: 7px 10px; border: 1px solid #48657f; border-radius: 7px; color: #dceaf8; background: #162a40; }
+.camera-ai-dialog-actions button[type="submit"] { border-color: #5b9db4; background: #245771; }
+.poe-assignment-warning { padding: 12px; border: 1px solid #a66a29; border-radius: 8px; background: #352313; color: #ffe0a3; overflow-wrap: anywhere; }
+.poe-assignment-warning p { margin: 8px 0 0; }
+.poe-assignment-warning button { margin-top: 10px; }
+.poe-scan-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #c4d9ea; font-size: 12px; }
+.poe-scan-controls[data-scanning="true"] svg { animation: poe-scan-spin 1.2s linear infinite; }
+@keyframes poe-scan-spin { to { transform: rotate(360deg); } }
+.poe-camera-form { min-width: 0; align-self: start; }
+.poe-camera-form h3 { display: flex; align-items: center; gap: 6px; margin: 0; color: #d5e8fa; font-size: 14px; }
+.poe-camera-form h3 svg { flex: none; color: var(--ui-accent); }
+.poe-camera-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.poe-camera-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.poe-camera-fields { display: grid; grid-template-columns: minmax(0, 2fr) minmax(72px, 1fr) minmax(74px, max-content); gap: 8px; align-items: end; }
+.poe-camera-fields label { min-width: 0; align-content: start; }
+.poe-camera-fields :is(input, select), .poe-camera-credentials input { transition: border-color 160ms ease, background-color 160ms ease; }
+.poe-camera-fields :is(input, select):focus, .poe-camera-credentials input:focus { border-color: #6ed6ee; background-color: #14283c; }
+.poe-camera-heading .poe-camera-connect-trigger { padding: 4px 7px; min-height: 29px; white-space: nowrap; font-size: 11px; }
+.poe-camera-connect { width: min(420px, calc(100vw - 28px)); padding: clamp(16px, 4vw, 24px); }
+.poe-camera-connect h4 { margin: 0 0 16px; color: #edf5ff; font-size: 20px; }
+.poe-camera-credentials { display: grid; gap: 10px; }
+.poe-connect-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.poe-camera-connect .form-error { margin-top: 10px; }
+.poe-camera-credentials input::placeholder { color: #9baec5; opacity: 1; }
+.poe-camera-fields .poe-ip-select[data-placeholder="true"],
+.poe-camera-fields input::placeholder { color: #9baec5; opacity: 1; }
+.poe-camera-fields .poe-ip-select option:not(:disabled) { color: #edf3fa; }
+.poe-camera-fields .poe-manual-ip { grid-column: 1 / -1; grid-row: 2; }
+.poe-camera-fields .primary-action {
+  grid-column: 3;
+  grid-row: 1;
+  min-height: 44px;
+  max-width: clamp(82px, 19vw, 150px);
+  padding: 6px 8px;
+}
+.poe-mappings-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+.poe-mappings-table th, .poe-mappings-table td { padding: 11px 9px; text-align: start; border-bottom: 1px solid #283d52; overflow-wrap: anywhere; }
+.poe-mappings-table th { color: #afc8df; font-size: 12px; }
+.poe-mappings-table td:nth-child(3) { font-family: "Geist Mono", monospace; }
+.poe-mappings-table :is(th, td):last-child { text-align: end; font-variant-numeric: tabular-nums; }
+.poe-mappings-table tr:last-child td { border-bottom: 0; }
+.poe-mappings-empty { color: #afc8df; margin: 16px 0 0; }
+.poe-saved-mappings { padding: 12px !important; margin-top: 8px; border-radius: 8px !important; }
+.poe-saved-mappings > h2 { padding-bottom: 8px; }
+.poe-saved-mappings .poe-mappings-empty { margin-top: 8px; }
+.poe-delete-button { padding: 5px 7px; border: 1px solid #9b505a; border-radius: 6px; background: #34232e; color: #ffbecc; font-size: 12px; }
+.poe-delete-button:disabled { opacity: .55; }
+/* Keep each bay and both camera assignments visible in one workspace. */
+.poe-workspace { display: grid; gap: 5px; }
+.poe-bay-editor {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  min-width: 0;
+  border: 1px solid #30475e;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #101d2d;
+}
+.poe-bay-row-title {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 8px 11px;
+  border-inline-end: 1px solid #30475e;
+  background: #162b40;
+}
+.poe-bay-row-title h2 { margin: 0; color: #edf6fd; font-size: 17px; }
+.poe-bay-row-title span { color: #a4c2d6; font-size: 11px; }
+.poe-camera-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  padding: 5px;
+  animation: settings-change 220ms var(--ease-out) backwards;
+}
+.poe-camera-pair .poe-camera-form {
+  margin: 0;
+  padding: 10px;
+  gap: 10px;
+  border: 1px solid #29435d;
+  border-radius: 8px;
+  background: #0e1a2a;
+}
+.poe-camera-pair .poe-camera-form:focus-within { border-color: #4f8199; }
+.poe-camera-heading .poe-camera-connect-trigger { background: transparent; border-color: #3a5973; }
+.poe-camera-fields .primary-action { font-size: 12px; }
+@media (max-width: 940px) {
+  .poe-camera-pair { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 620px) {
+  .poe-bay-editor { grid-template-columns: minmax(0, 1fr); }
+  .poe-bay-row-title { display: flex; justify-content: space-between; align-items: center; border-inline-end: 0; border-bottom: 1px solid #30475e; }
+  .poe-camera-pair .poe-camera-form { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .poe-scan-controls[data-scanning="true"] svg, .poe-camera-pair { animation: none; }
+  .poe-camera-fields :is(input, select), .poe-camera-credentials input { transition: none; }
+}
+
+@media (max-width: 760px) {
+  .utility-button { width: 28px; height: 28px; }
+  .monitor-utilities { gap: 4px; }
+  .controls-guide { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { .controls-guide[open] { animation: none; } }
+
+@media (min-width: 1600px) and (min-height: 800px) {
+  #root > .dashboard-grid {
+    gap: clamp(10px, .65vw, 24px);
+  }
+  .dashboard-grid .bay-camera-pair { gap: clamp(4px, .35vw, 12px); }
+  .dashboard-grid .camera-tile .bay-card-camera-heading {
+    padding: .35em .7em;
+    font-size: clamp(16px, 1vw, 32px) !important;
+  }
+  .dashboard-grid .bay-card-placeholder { font-size: clamp(15px, .85vw, 28px) !important; }
+  .dashboard-grid .bay-card-placeholder svg { width: 1.45em; height: 1.45em; }
+  .dashboard-grid .bay-pair-label {
+    padding: .25em .7em;
+    font-size: clamp(17px, 1vw, 32px);
+  }
+  #root > .app-header .app-header-title { font-size: clamp(20px, 1.12vw, 32px) !important; }
+  #root > .app-header .app-header-nav { gap: clamp(6px, .45vw, 18px) !important; }
+  #root > .app-header .app-header-nav a {
+    padding-inline: clamp(9px, .7vw, 25px) !important;
+    font-size: clamp(15px, .8vw, 24px) !important;
+  }
+  #root > .app-header .app-header-nav a svg { width: 1em; height: 1em; }
+  .bay-monitor-grid { gap: clamp(10px, .7vw, 24px); }
+  .bay-monitor-context h1 { font-size: clamp(20px, 1.2vw, 36px); }
+  .bay-monitor-camera .camera-viewer-heading h2 { font-size: clamp(18px, 1.1vw, 32px); }
+  .camera-text-overlay strong { font-size: clamp(23px, 1.5vw, 52px); }
+  .camera-text-overlay span { font-size: clamp(14px, .8vw, 26px); }
+  .engagement-event-list .engagement-recording-days time { font-size: clamp(12px, .68vw, 23px); }
+  .engagement-recording-days button span { font-size: clamp(14px, .8vw, 26px); }
+  .engagement-event-list h2, .engagement-clip h2 { font-size: clamp(19px, 1vw, 32px); }
+  .performance-chart-frame canvas { height: clamp(300px, 39vh, 720px); }
+  .login-page .login-card { width: min(100%, clamp(500px, 28vw, 860px)); }
+  .login-page .account-form :is(label, button), .login-page .login-card > p { font-size: clamp(15px, .8vw, 26px); }
+  .login-page .account-form input { min-height: clamp(48px, 3vw, 78px); }
+}
+
+.bay-area-heading {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  margin: var(--workspace-padding) var(--workspace-padding) 0;
+  padding: 5px 10px;
+  border: 1px solid #365871;
+  border-radius: 7px;
+  background: linear-gradient(105deg, #1a3646, #111f34 75%);
+  color: #d6e9f6;
+}
+.bay-area-heading svg { flex: none; color: var(--ui-accent); }
+.bay-area-heading h2 { margin: 0; font-size: clamp(15px, 1.15vw, 22px); }
+.bay-area-heading span { margin-inline-start: auto; font-size: clamp(12px, .8vw, 17px); color: #b5ccdf; }
+
+@media (min-width: 761px) {
+  #root > .dashboard-grid[data-bay-count="4"] { grid-template-rows: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 761px) and (min-aspect-ratio: 1/1) {
+  #root > .dashboard-grid[data-bay-count="4"] { grid-template-rows: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 761px) and (min-aspect-ratio: 3/1) {
+  #root > .dashboard-grid[data-bay-count="4"] { grid-template-rows: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  #root > .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: max-content;
+    align-content: start;
+    gap: 10px;
+    overflow-y: auto;
+  }
+  .dashboard-grid .bay-camera-pair { aspect-ratio: 32 / 9; min-height: 105px; }
+  .dashboard-grid .camera-tile .bay-card-camera-heading { font-size: 11px !important; }
+  .dashboard-grid .bay-pair-label { font-size: 12px; }
+  #root:has(> .bay-monitor-page) { height: auto; min-height: 100dvh; overflow: visible; }
+  .bay-monitor-page { display: block; }
+  .bay-monitor-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .bay-monitor-camera .camera-viewer-viewport { flex: none; height: auto; aspect-ratio: 16 / 9 !important; }
+  .camera-viewer-actions button { min-height: 36px; }
+}
+
+@media (max-width: 560px) {
+  #root > .app-header { grid-template-rows: 26px 36px; }
+  #root > .app-header .app-header-nav :is(a, .utility-button, .profile-trigger) {
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .npu-readouts-grid { grid-template-columns: minmax(0, 1fr); }
+  .poe-mappings-table :is(th, td) { padding: 8px 4px; }
+  .poe-delete-button { min-height: 36px; }
+}
+
+@media (max-width: 360px) {
+  #root > .app-header .app-header-nav { gap: 3px !important; }
+  #root > .app-header .app-header-nav :is(a, .utility-button, .profile-trigger) { min-width: 34px; }
+  #root > .app-header .profile-trigger { gap: 0; font-size: 0; }
+  .monitor-utilities { gap: 3px; }
+}

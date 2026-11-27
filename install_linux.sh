@@ -16,6 +16,15 @@ fi
 
 "$VENV_PYTHON" -m pip install -r "$APP_DIR/requirements.txt"
 
+if ! command -v npm >/dev/null 2>&1; then
+    printf '%s\n' "Node.js and npm are required to build the frontend. Install them and retry." >&2
+    exit 1
+fi
+npm --prefix "$APP_DIR/NMDC_frontend" ci
+NMDC_BACKEND_URL=http://127.0.0.1:8001 \
+NMDC_API_URL=http://127.0.0.1:8002 \
+    npm --prefix "$APP_DIR/NMDC_frontend" run build
+
 DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 VOICE_DIR="$DATA_HOME/nmdc-hook-detector/voices"
 VOICE_MODEL="$VOICE_DIR/hi_IN-rohan-medium.onnx"

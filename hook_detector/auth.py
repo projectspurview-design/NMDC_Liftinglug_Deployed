@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+from contextlib import contextmanager
 import hashlib
 import hmac
 import os
@@ -9,7 +10,7 @@ import secrets
 import sqlite3
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 SESSION_COOKIE_NAME = "nmdc_session"
 SESSION_MAX_AGE_SECONDS = 12 * 60 * 60
@@ -33,7 +34,7 @@ class AuthStore:
             Path(configured_dir).expanduser()
             if configured_dir
             else Path.home() / ".nmdc-hook-detector"
-        )
+        ).resolve()
         self.path = self.data_dir / "auth.sqlite3"
         self.cookie_secure = (
             _environment_bool("NMDC_COOKIE_SECURE", default=True)
@@ -81,11 +82,28 @@ class AuthStore:
             )
         self._dummy_password_hash = self._hash_password(secrets.token_urlsafe(24))
 
-    def _connect(self) -> sqlite3.Connection:
-        database = sqlite3.connect(self.path, timeout=5)
-        database.row_factory = sqlite3.Row
-        database.execute("PRAGMA foreign_keys = ON")
-        return database
+    @contextmanager
+    def _connect(self) -> Iterator[sqlite3.Connection]:
+        try:
+            database = sqlite3.connect(self.path, timeout=5)
+        except sqlite3.OperationalError as error:
+            directory_exists = self.data_dir.is_dir()
+            directory_accessible = directory_exists and os.access(
+                self.data_dir,
+                os.R_OK | os.W_OK | os.X_OK,
+            )
+            raise sqlite3.OperationalError(
+                f"{error} (authentication database: {self.path}; "
+                f"data directory exists: {directory_exists}; "
+                f"data directory accessible: {directory_accessible})"
+            ) from error
+        try:
+            database.row_factory = sqlite3.Row
+            database.execute("PRAGMA foreign_keys = ON")
+            with database:
+                yield database
+        finally:
+            database.close()
 
     @staticmethod
     def _normalize_license_id(license_id: Any) -> str:

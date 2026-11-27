@@ -1,23 +1,48 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
+from pathlib import Path
 import threading
 import os
 import re
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from typing import Any
+from typing import Any, AsyncGenerator
 
 import cv2
+import httpx
 import uvicorn
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .auth import SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS, AuthStore
 from .performance import PerformanceMonitor
 
-app = FastAPI(title="NMDC Lifting Hook Detector API")
+
+def _create_backend_client() -> httpx.AsyncClient:
+    return httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=5.0, read=None, write=5.0, pool=5.0),
+        limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+    )
+
+
+@asynccontextmanager
+async def _lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
+    client = _create_backend_client()
+    application.state.backend_client = client
+    try:
+        yield
+    finally:
+        await client.aclose()
+        del application.state.backend_client
+
+
+app = FastAPI(title="NMDC Lifting Hook Detector API", lifespan=_lifespan)
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "NMDC_frontend" / "dist"
 TRAIN_BAY_IDS = {
     "1": tuple(f"Bay-{bay:02d}" for bay in range(1, 5)),
     "2": tuple(f"Bay-{bay:02d}" for bay in range(5, 9)),
@@ -33,6 +58,123 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "X-CSRF-Token"],
 )
+
+
+async def _proxy_backend(request: Request, backend_path: str) -> StreamingResponse:
+    backend_url = getattr(
+        request.app.state,
+        "backend_url",
+        os.getenv("NMDC_BACKEND_PROXY_URL", "http://127.0.0.1:8001"),
+    ).rstrip("/")
+    target = f"{backend_url}/{backend_path}"
+    if request.url.query:
+        target = f"{target}?{request.url.query}"
+
+    forwarded_headers = {
+        name: value
+        for name, value in request.headers.items()
+        if name.lower() not in {
+            "connection",
+            "content-length",
+            "host",
+            "keep-alive",
+            "proxy-authenticate",
+            "proxy-authorization",
+            "te",
+            "trailers",
+            "transfer-encoding",
+            "upgrade",
+        }
+    }
+    client: httpx.AsyncClient | None = getattr(request.app.state, "backend_client", None)
+    owns_client = client is None
+    if client is None:
+        client = _create_backend_client()
+    try:
+        upstream_request = client.build_request(
+            request.method,
+            target,
+            headers=forwarded_headers,
+            content=await request.body(),
+        )
+        upstream = await client.send(upstream_request, stream=True)
+    except httpx.RequestError as error:
+        if owns_client:
+            await client.aclose()
+        raise HTTPException(
+            status_code=502,
+            detail="The camera backend is unavailable.",
+        ) from error
+
+    excluded_response_headers = {
+        "connection",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailers",
+        "transfer-encoding",
+        "upgrade",
+    }
+
+    async def stream_upstream() -> AsyncGenerator[bytes, None]:
+        try:
+            async for chunk in upstream.aiter_raw():
+                yield chunk
+        finally:
+            try:
+                await upstream.aclose()
+            finally:
+                if owns_client:
+                    await client.aclose()
+
+    result = StreamingResponse(stream_upstream(), status_code=upstream.status_code)
+    result.raw_headers.extend(
+        (name.lower().encode("latin-1"), value.encode("latin-1"))
+        for name, value in upstream.headers.multi_items()
+        if name.lower() not in excluded_response_headers
+    )
+    return result
+
+
+@app.api_route("/auth/{path:path}", methods=["GET", "POST", "DELETE", "OPTIONS"], include_in_schema=False)
+async def proxy_auth(path: str, request: Request):
+    return await _proxy_backend(request, f"auth/{path}")
+
+
+@app.api_route("/system/{path:path}", methods=["GET", "POST", "DELETE", "OPTIONS"], include_in_schema=False)
+async def proxy_system(path: str, request: Request):
+    return await _proxy_backend(request, f"system/{path}")
+
+
+@app.api_route("/camera-admin/{path:path}", methods=["GET", "POST", "DELETE", "OPTIONS"], include_in_schema=False)
+async def proxy_camera_admin(path: str, request: Request):
+    return await _proxy_backend(request, f"camera-admin/{path}")
+
+
+@app.api_route("/camera/{path:path}", methods=["GET", "POST", "DELETE", "OPTIONS"], include_in_schema=False)
+async def proxy_camera(path: str, request: Request):
+    return await _proxy_backend(request, f"camera/{path}")
+
+
+@app.api_route("/status", methods=["GET", "OPTIONS"], include_in_schema=False)
+async def proxy_status(request: Request):
+    return await _proxy_backend(request, "status")
+
+
+@app.api_route("/health", methods=["GET", "OPTIONS"], include_in_schema=False)
+async def proxy_health(request: Request):
+    return await _proxy_backend(request, "health")
+
+
+@app.api_route("/snapshot.jpg", methods=["GET", "OPTIONS"], include_in_schema=False)
+async def proxy_snapshot(request: Request):
+    return await _proxy_backend(request, "snapshot.jpg")
+
+
+@app.api_route("/stream", methods=["GET", "OPTIONS"], include_in_schema=False)
+async def proxy_stream(request: Request):
+    return await _proxy_backend(request, "stream")
 
 
 class LoginRequest(BaseModel):
@@ -809,6 +951,11 @@ def start_api(
     auth_store: AuthStore | None = None,
 ):
     """Start the API server in a background thread."""
+    app.state.backend_url = os.getenv(
+        "NMDC_BACKEND_PROXY_URL",
+        f"http://127.0.0.1:{port - 1}",
+    )
+
     def _run():
         # attach processor to app state so endpoints can access it
         app.state.processor = processor
@@ -819,3 +966,7 @@ def start_api(
     thread = threading.Thread(target=_run, daemon=True)
     thread.start()
     return thread
+
+
+if FRONTEND_DIST.is_dir() and (FRONTEND_DIST / "index.html").is_file():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")

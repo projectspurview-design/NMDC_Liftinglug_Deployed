@@ -1,0 +1,1289 @@
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: radial-gradient(circle at 12% 0%, #0b1f4d 0, #020617 45%, #032e84 100%);
+  background-attachment: fixed;
+  color: white;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.app-header {
+  box-sizing: border-box;
+  padding: clamp(8px, 1.4vw, 16px) clamp(12px, 2vw, 28px) !important;
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+  flex: 1 1 min(680px, 60%);
+  min-width: 0;
+}
+
+.app-header-logo {
+  width: clamp(56px, 7vw, 100px) !important;
+  height: clamp(32px, 4vw, 52px) !important;
+  flex: 0 0 auto;
+}
+
+.app-header-copy {
+  min-width: 0;
+}
+
+.app-header-title {
+  font-size: clamp(15px, 1.7vw, 24px) !important;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.app-header-subtitle {
+  font-size: clamp(10px, 1vw, 12px) !important;
+  line-height: 1.25;
+}
+
+.app-header-nav {
+  gap: clamp(4px, 0.7vw, 10px) !important;
+  min-width: 0;
+}
+
+.app-header-nav a {
+  padding: clamp(6px, 0.65vw, 8px) clamp(8px, 1vw, 14px) !important;
+  font-size: clamp(11px, 1vw, 14px) !important;
+  white-space: nowrap;
+}
+
+.app-header-status {
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: clamp(6px, 0.65vw, 8px) clamp(8px, 0.9vw, 12px) !important;
+  font-size: clamp(10px, 0.95vw, 13px) !important;
+}
+
+.app-header-status-label {
+  overflow-wrap: anywhere;
+}
+
+button {
+  font: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+/* Inline styles own the resting state; this only adds pointer feedback. */
+button:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+a:hover {
+  opacity: 0.85;
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+.bay-monitor-page {
+  width: min(calc(100% - 32px), 1800px);
+  margin: 0 auto;
+  padding: clamp(12px, 1.6vw, 22px) 0 clamp(16px, 2.5vh, 36px);
+}
+
+.bay-monitor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(8px, 1.5vh, 18px);
+}
+
+.bay-monitor-heading h1 {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.bay-monitor-heading p {
+  margin: 5px 0 0;
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 14px;
+}
+
+.bay-monitor-transport {
+  color: rgba(226, 232, 240, 0.65);
+  font-size: 12px;
+}
+
+.bay-card-cameras {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.bay-card-cameras > div {
+  min-width: 0;
+}
+
+.bay-monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(10px, 1vw, 18px);
+}
+
+.bay-monitor-camera {
+  min-width: 0;
+  display: grid;
+  gap: clamp(8px, 1vh, 12px);
+  align-content: start;
+}
+
+.camera-viewer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 2px 12px;
+}
+
+.camera-viewer-heading h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.camera-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.camera-connection-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: rgba(241, 245, 249, 0.88);
+}
+
+.camera-connection-status span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.camera-display-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 12px;
+}
+
+.camera-display-mode select {
+  min-height: 32px;
+  padding: 4px 28px 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: #17233b;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+
+.camera-display-mode select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.camera-connection-details {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+}
+
+.camera-connection-details summary {
+  width: fit-content;
+  cursor: pointer;
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.camera-connection-details form {
+  margin-top: 10px !important;
+}
+
+.bay-monitor-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+}
+
+.monitor-page-title {
+  margin-bottom: 0;
+}
+
+.monitor-layout {
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr) !important;
+}
+
+.alignment-panel,
+.camera-alert-panel {
+  min-width: 0;
+  padding: 16px !important;
+  border-radius: 14px !important;
+}
+
+.alignment-panel-title {
+  margin: 9px 0 12px;
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.alignment-panel-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+}
+
+.alignment-panel-meta span {
+  display: grid;
+  gap: 4px;
+  color: rgba(226, 232, 240, 0.65);
+  font-size: 11px;
+}
+
+.alignment-panel-meta strong {
+  color: white;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.camera-alert-message {
+  margin: 9px 0 6px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.camera-alert-state {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.camera-alert-panel ul {
+  max-height: 160px !important;
+}
+
+.camera-alert-panel li {
+  gap: 8px !important;
+}
+
+@media (min-width: 921px) and (max-height: 950px) {
+  .app-header {
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    padding: 6px 12px !important;
+  }
+
+  .app-header-brand {
+    flex: 1 1 auto;
+  }
+
+  .app-header-title {
+    font-size: clamp(14px, 1.35vw, 19px) !important;
+  }
+
+  .app-header-nav {
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+  }
+
+  .app-header-nav a {
+    padding: 6px 8px !important;
+    font-size: clamp(10px, 0.9vw, 12px) !important;
+  }
+
+  .app-header-status {
+    gap: 5px !important;
+    margin-left: 0 !important;
+    padding: 6px 8px !important;
+    font-size: clamp(9px, 0.8vw, 11px) !important;
+  }
+
+  .bay-monitor-page {
+    width: calc(100% - 24px);
+    padding: 8px 0 12px;
+  }
+
+  .monitor-page {
+    padding: 4px 12px !important;
+  }
+
+  .monitor-page-title {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 1.8vw, 26px);
+  }
+
+  .monitor-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .monitor-camera-column .camera-viewer {
+    padding: 10px !important;
+  }
+
+  .monitor-camera-picker {
+    gap: 6px !important;
+    margin-top: 8px !important;
+  }
+
+  .monitor-camera-picker button {
+    padding: 6px 10px !important;
+  }
+
+  .monitor-info-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 8px;
+  }
+
+  .monitor-info-column .alignment-panel,
+  .monitor-info-column .camera-alert-panel {
+    padding: 10px !important;
+  }
+
+  .monitor-info-column .camera-alert-panel ul {
+    max-height: 80px !important;
+  }
+
+  .monitor-navigation {
+    gap: 14px !important;
+    margin-top: 10px !important;
+  }
+
+  .monitor-bay-picker {
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  .bay-monitor-heading {
+    margin-bottom: 8px;
+  }
+
+  .bay-monitor-heading h1 {
+    font-size: clamp(20px, 1.8vw, 26px);
+  }
+
+  .bay-monitor-heading p {
+    font-size: 12px;
+  }
+
+  .bay-monitor-grid {
+    gap: 10px;
+  }
+
+  .bay-monitor-camera {
+    gap: 8px;
+  }
+
+  .camera-viewer {
+    padding: 10px !important;
+  }
+
+  .camera-viewer-heading {
+    margin-bottom: 7px;
+  }
+
+  .camera-viewer-heading h2 {
+    font-size: 15px;
+  }
+
+  .camera-viewer-viewport {
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .camera-viewer-controls {
+    gap: 6px !important;
+    margin-top: 6px !important;
+  }
+
+  .camera-viewer-controls input[type="range"] {
+    width: clamp(70px, 10vw, 110px) !important;
+  }
+
+  .camera-viewer-controls button {
+    min-width: 28px !important;
+    min-height: 28px !important;
+  }
+
+  .camera-display-mode select {
+    min-height: 28px;
+  }
+
+  .camera-connection-details {
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .bay-monitor-info-grid {
+    gap: 8px;
+  }
+
+  .alignment-panel,
+  .camera-alert-panel {
+    padding: 10px !important;
+  }
+
+  .camera-alert-panel ul {
+    max-height: 80px !important;
+  }
+}
+
+@media (min-width: 921px) and (max-height: 620px) {
+  .bay-monitor-page {
+    padding: 6px 0;
+  }
+
+  .bay-monitor-heading {
+    margin-bottom: 6px;
+  }
+
+  .bay-monitor-grid {
+    gap: 8px;
+  }
+
+  .bay-monitor-camera {
+    gap: 6px;
+  }
+
+  .alignment-panel-meta,
+  .camera-alert-panel > :nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .monitor-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .monitor-info-column {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .bay-card-cameras,
+  .bay-monitor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-header {
+    justify-content: center !important;
+  }
+
+  .app-header-brand,
+  .app-header-nav {
+    flex: 1 1 100%;
+  }
+
+  .app-header-nav {
+    justify-content: center !important;
+    margin-left: 0 !important;
+  }
+
+  .bay-monitor-page {
+    width: calc(100% - 24px);
+    padding-top: 16px;
+  }
+
+  .bay-monitor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bay-monitor-info-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .camera-viewer-heading {
+    align-items: flex-start;
+  }
+
+  .camera-viewer-heading > div:first-child span {
+    display: none;
+  }
+
+  .camera-display-mode {
+    margin-left: auto;
+  }
+}
+
+/* Use the actual available viewport, including mobile browser chrome changes. */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-header { flex-shrink: 0; }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(8px, 1.2vw, 18px);
+  padding: clamp(8px, 1.2vw, 20px);
+  flex: 1;
+  min-width: 0;
+}
+
+.bay-card {
+  padding: clamp(6px, 0.7vw, 10px) !important;
+  gap: clamp(8px, 1vh, 14px) !important;
+}
+
+.bay-card h2 { font-size: clamp(16px, 1.4vw, 23px); }
+.bay-card-cameras { gap: clamp(6px, 1vw, 14px); }
+.bay-card-cameras > div > div:first-child { flex-wrap: wrap; }
+
+.bay-monitor-page {
+  width: 100%;
+  max-width: none;
+  padding: clamp(4px, 0.5vw, 8px);
+  flex: 1;
+  min-width: 0;
+}
+
+.camera-viewer-heading { flex-wrap: wrap; }
+.camera-viewer-heading > div { min-width: 0; }
+.camera-viewer-controls input[type="range"] { max-width: 100%; }
+.camera-display-mode { flex-wrap: wrap; }
+.camera-display-mode select { max-width: 100%; }
+.monitor-page { flex: 1; min-width: 0; }
+.monitor-navigation { flex-wrap: wrap; }
+
+/* On wider displays, distribute the cameras over all remaining screen space. */
+@media (min-width: 1000px) and (min-height: 600px) {
+  #root:has(> .dashboard-grid),
+  #root:has(> .bay-monitor-page) {
+    height: 100dvh;
+  }
+
+  .dashboard-grid {
+    min-height: 0;
+    grid-auto-rows: max-content;
+    overflow: auto;
+  }
+
+  .bay-card { min-height: 0; }
+  .bay-card-cameras { flex: 1; min-height: 0; }
+  .bay-card-cameras > div {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .bay-card-viewport { flex: 0 0 auto; aspect-ratio: 16 / 9 !important; }
+
+  .bay-monitor-page {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .bay-monitor-heading { flex-shrink: 0; }
+  .bay-monitor-grid { flex: 1; min-height: 0; align-items: stretch; }
+  .bay-monitor-camera {
+    min-height: 0;
+    grid-template-rows: auto auto;
+    align-content: start;
+    overflow: auto;
+  }
+  .bay-monitor-camera .camera-viewer {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  .bay-monitor-camera .camera-viewer-viewport {
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9 !important;
+    min-height: 0;
+  }
+  .camera-viewer-heading,
+  .camera-viewer-controls,
+  .camera-connection-details { flex-shrink: 0; }
+  .bay-monitor-info-grid { min-height: 0; }
+  .bay-monitor-info-grid > div { overflow: auto; }
+}
+
+.bay-monitor-grid { gap: 6px; }
+.bay-monitor-camera .camera-viewer { padding: 6px !important; }
+
+@media (max-width: 640px) {
+  .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .bay-card-cameras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bay-monitor-heading { gap: 6px; }
+  .app-header-nav { margin-left: 0 !important; }
+  .camera-viewer-viewport { aspect-ratio: 16 / 9 !important; }
+  .monitor-navigation { gap: 8px !important; }
+  .monitor-navigation button { padding: 8px !important; }
+  .monitor-info-column { grid-template-columns: minmax(0, 1fr); }
+  .app-header-status { margin-left: 0 !important; }
+}
+
+@media (orientation: landscape) and (max-height: 599px) {
+  .app-header-subtitle { display: none; }
+  .app-header-logo { height: 28px !important; }
+  .app-header { padding: 4px 8px !important; gap: 6px !important; }
+  .bay-monitor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bay-monitor-info-grid { grid-template-columns: minmax(0, 1fr); }
+  .camera-viewer-viewport { aspect-ratio: 16 / 9 !important; }
+}
+
+/* Keep every bay in the viewport; the header takes its natural height. */
+body:has(.dashboard-grid) { overflow: hidden; }
+#root:has(> .dashboard-grid) {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#root > .dashboard-grid {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 3px;
+  padding: 3px;
+}
+
+.dashboard-grid .bay-card {
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  border-radius: 6px;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+.dashboard-grid .bay-card > div:first-child { flex-shrink: 0; }
+.dashboard-grid .bay-card h2 { font-size: clamp(12px, 1.2vw, 20px); }
+.dashboard-grid .bay-card-cameras {
+  flex: 1 1 0;
+  min-height: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+.dashboard-grid .bay-card-camera {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+.dashboard-grid .bay-card-camera-heading {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 6px;
+  background: linear-gradient(transparent, rgba(0,0,0,.8));
+  pointer-events: none;
+  flex-wrap: nowrap;
+  gap: 3px !important;
+  margin-bottom: 0 !important;
+  font-size: clamp(9px, 0.8vw, 12px) !important;
+}
+.bay-card-camera-heading > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-grid .bay-card-viewport {
+  flex: none;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+}
+.dashboard-grid .bay-card-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  padding: 4px !important;
+  font-size: clamp(8px, 0.75vw, 12px) !important;
+  overflow: hidden;
+}
+.bay-card-placeholder p { margin: 0 !important; }
+.bay-card-placeholder > span { display: none; }
+
+@media (min-aspect-ratio: 1/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-aspect-ratio: 3/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-grid .bay-card > div:first-child > span { display: none; }
+}
+
+@media (max-height: 450px) {
+  .dashboard-grid .bay-card-camera-heading > span:last-child { font-size: 0; }
+  .dashboard-grid .bay-card-camera-heading > span:last-child::after { content: "●"; font-size: 9px; }
+}
+
+
+.dashboard-grid .bay-card-heading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  padding: 4px 7px;
+  border-radius: 0 0 6px 0;
+  background: rgba(0, 0, 0, .65);
+  pointer-events: none;
+}
+.dashboard-grid .bay-card-heading > span { display: none; }
+.dashboard-grid .bay-card h2 { font-size: clamp(10px, 1vw, 15px); }
+.dashboard-grid .bay-card:focus-visible { outline: 2px solid #60a5fa; outline-offset: -2px; }
+.dashboard-grid .bay-card:hover { opacity: 1; }
+
+/* Each bay owns a header and two separately bordered camera panels. */
+.dashboard-grid .bay-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: clamp(3px, .45vw, 7px) !important;
+  gap: 3px !important;
+  border: 1px solid rgba(96, 165, 250, .5) !important;
+  border-radius: 8px;
+  background: #14233d !important;
+  isolation: isolate;
+}
+.dashboard-grid .bay-card-heading {
+  position: static;
+  transform: none;
+  padding: 1px 3px 3px;
+  background: transparent;
+  border-radius: 0;
+  min-width: 0;
+}
+.dashboard-grid .bay-card-heading > span {
+  display: inline;
+  font-size: 10px !important;
+}
+.dashboard-grid .bay-card-cameras {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  gap: clamp(3px, .45vw, 7px);
+  overflow: hidden;
+}
+.dashboard-grid .bay-card-camera {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid rgba(148, 163, 184, .35);
+  border-radius: 5px;
+  background: #080f1c;
+}
+.dashboard-grid .bay-card-camera-heading {
+  position: static;
+  padding: 2px 5px;
+  margin: 0 !important;
+  background: #1c2e49;
+  border-bottom: 1px solid rgba(148, 163, 184, .2);
+}
+.dashboard-grid .bay-card-camera-heading > span:first-child {
+  font-weight: 700;
+  color: white;
+}
+.dashboard-grid .bay-card-viewport {
+  grid-area: 2 / 1;
+  min-width: 0;
+}
+
+@media (max-height: 450px), (max-width: 480px) {
+  .dashboard-grid .bay-card-heading { padding: 0 2px 1px; }
+  .dashboard-grid .bay-card-heading > span { display: none; }
+  .dashboard-grid .bay-card-camera-heading { padding: 1px 3px; }
+}
+
+/* Give the bay monitor's remaining screen space to its two camera panels. */
+.bay-monitor-page { padding: 4px; }
+.bay-monitor-camera .camera-viewer { border-radius: 8px; }
+.bay-monitor-camera .camera-viewer-heading { margin: 0 2px 5px; }
+.bay-monitor-camera .camera-viewer-heading h2 { margin: 0; }
+.bay-monitor-camera .camera-viewer-heading > div:first-child > span { display: none; }
+.bay-monitor-camera .camera-viewer-viewport { border-radius: 5px !important; }
+
+@media (min-width: 641px) {
+  #root:has(> .bay-monitor-page) {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .bay-monitor-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .bay-monitor-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 4px;
+  }
+  .bay-monitor-camera {
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .bay-monitor-camera .camera-viewer {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px !important;
+  }
+  .bay-monitor-camera .camera-viewer-viewport {
+    flex: 1 1 0;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto !important;
+  }
+  .bay-monitor-info-grid {
+    max-height: clamp(110px, 23dvh, 200px);
+    min-height: 0;
+    gap: 4px;
+    overflow: auto;
+  }
+  .bay-monitor-info-grid > div { min-height: 0; overflow: auto; }
+}
+
+/* Camera tiles occupy the dashboard directly, without an outer bay card. */
+#root > .dashboard-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  padding: 2px;
+  gap: 2px;
+}
+.camera-tile {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(148, 163, 184, .3);
+  border-radius: 5px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .3s, box-shadow .3s;
+  animation: panel-enter .7s var(--ease-out) backwards;
+}
+.camera-tile:hover { opacity: 1; border-color: #b6a5ff; }
+.camera-tile:focus-visible { outline: 2px solid #b6a5ff; outline-offset: -2px; }
+.dashboard-grid .camera-tile .bay-card-camera {
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+.dashboard-grid .camera-tile .bay-card-camera-heading {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  background: linear-gradient(rgba(0, 0, 0, .75), transparent);
+  border: 0;
+  padding: 5px 7px;
+  pointer-events: none;
+}
+.dashboard-grid .camera-tile .bay-card-viewport {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+.bay-monitor-camera .camera-viewer {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-aspect-ratio: 3/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* One shared bay badge identifies each pair without adding an outer panel. */
+#root > .dashboard-grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+}
+.bay-camera-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  gap: 2px;
+}
+.bay-pair-label {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 6px 6px 0 0;
+  background: rgba(8, 15, 28, .85);
+  color: white;
+  font-size: clamp(9px, 1vw, 14px);
+  font-weight: 600;
+  pointer-events: none;
+}
+@media (min-aspect-ratio: 1/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-aspect-ratio: 3/1) {
+  #root > .dashboard-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Separate bays while keeping each camera pair together. */
+#root > .dashboard-grid {
+  gap: clamp(6px, .65vw, 10px);
+  padding: clamp(4px, .4vw, 6px);
+}
+.bay-camera-pair {
+  outline: 1px solid rgba(203, 213, 225, .28);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+
+.bay-camera-pair {
+  transition: outline-color .3s, box-shadow .35s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .bay-camera-pair:hover {
+    outline-color: rgba(182, 165, 255, .85);
+    box-shadow: 0 0 0 2px rgba(117, 97, 223, .12),
+      0 0 18px rgba(117, 97, 223, .22);
+  }
+}
+.bay-camera-pair:focus-within {
+  outline-color: rgba(182, 165, 255, .85);
+  box-shadow: 0 0 0 2px rgba(117, 97, 223, .12),
+    0 0 18px rgba(117, 97, 223, .22);
+}
+
+/* Keep the navigation geometry independent of the active page. */
+html { scrollbar-gutter: stable; }
+
+#root > .app-header {
+  height: 76px;
+  flex: 0 0 76px;
+  padding: 12px 20px !important;
+  gap: 12px !important;
+  flex-wrap: nowrap !important;
+}
+#root > .app-header .app-header-brand { flex: 1 1 auto; }
+#root > .app-header .app-header-logo {
+  width: 64px !important;
+  height: 42px !important;
+}
+#root > .app-header .app-header-title {
+  font-size: clamp(12px, 1.19vw, 19px) !important;
+  line-height: 1.16;
+  text-wrap: balance;
+  overflow-wrap: normal;
+}
+#root > .app-header .app-header-title span { color: #b8eafa; white-space: nowrap; }
+#root > .app-header .app-header-nav {
+  flex: 0 0 auto;
+  flex-wrap: nowrap !important;
+  margin-left: auto !important;
+  gap: 5px !important;
+}
+#root > .app-header .app-header-nav a {
+  padding: 7px 8px !important;
+  font-size: clamp(10px, .95vw, 14px) !important;
+}
+@media (max-width: 1100px) {
+  #root > .app-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 28px 32px;
+    padding: 5px 8px !important;
+    gap: 4px !important;
+  }
+  #root > .app-header .app-header-brand { gap: 6px; }
+  #root > .app-header .app-header-logo {
+    width: 36px !important;
+    height: 28px !important;
+  }
+  #root > .app-header .app-header-title { font-size: 11px !important; }
+  #root > .app-header .app-header-nav {
+    width: 100%;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+  #root > .app-header .app-header-nav a {
+    padding: 5px 7px !important;
+    font-size: 10px !important;
+  }
+}
+@media (max-width: 560px) {
+  #root > .app-header .app-header-nav a {
+    width: 31px;
+    height: 28px;
+    gap: 0;
+    font-size: 0 !important;
+  }
+}
+
+/* License login and profile controls. */
+.auth-loading { min-height: 100dvh; display: grid; place-items: center; color: #cbd5e1; }
+.login-card { width: min(100%, 460px); padding: clamp(24px, 4vw, 40px); border: 1px solid rgba(182,165,255,.3); border-radius: 24px; background: linear-gradient(145deg, #192942, #0c1428); box-shadow: 0 24px 80px rgba(0,0,0,.25); animation: panel-enter .7s var(--ease-out) backwards; }
+.login-logo { width: 96px; height: 50px; object-fit: contain; background: white; border-radius: 10px; padding: 5px; margin-bottom: 24px; }
+.login-symbol { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(117,97,223,.2); color: #c5b7ff; }
+.login-card h1 { margin: 18px 0 8px; font-size: 28px; }
+.login-card > p, .license-dialog > p { font-size: 14px; line-height: 1.6; color: #aebcd1; }
+.account-form { display: grid; gap: 18px; margin-top: 24px; }
+.account-form label { display: grid; gap: 7px; font-size: 13px; font-weight: 500; }
+.account-form input, .account-form select { width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid #3f4c65; border-radius: 10px; background: #0d172a; color: white; font: inherit; }
+.account-form .primary-action { padding: 12px; border: 1px solid #a18aef; border-radius: 10px; color: white; background: #6951ca; cursor: pointer; font-weight: 600; }
+.account-form .primary-action:hover { background: #7a63dc !important; }
+.account-form button:disabled { opacity: .6; cursor: wait; }
+.password-field { position: relative; }
+.password-field input { padding-right: 44px; }
+.password-field button { position: absolute; right: 5px; top: 5px; height: 34px; width: 34px; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: #aebcd1; cursor: pointer; }
+.form-error { color: #fda4af; font-size: 13px; margin: 0; line-height: 1.5; }
+.form-success { color: #86efac; font-size: 13px; margin: 0; }
+.login-card .login-note { font-size: 12px; margin: 24px 0 0; }
+.profile { position: relative; flex-shrink: 0; }
+.profile-trigger { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 12px; border: 1px solid #d9d6ee; border-radius: 99px; background: #f0edff; color: #5b48c9; cursor: pointer; font-size: 12px; font-weight: 600; }
+.profile-trigger:hover { background: #e7e1ff !important; }
+.profile-menu { position: absolute; top: calc(100% + 10px); right: 0; width: min(260px, calc(100vw - 24px)); z-index: 100; display: grid; gap: 8px; padding: 16px; border: 1px solid #d9d6ee; border-radius: 14px; background: #fff; color: #202136; box-shadow: 0 18px 50px rgba(0,0,0,.25); animation: panel-enter .25s var(--ease-out) backwards; }
+.profile-menu strong { overflow-wrap: anywhere; }
+.profile-caption { color: #6b6d82; font-size: 12px; padding-bottom: 8px; border-bottom: 1px solid #e7e7ee; }
+.profile-menu button { display: flex; align-items: center; gap: 8px; background: transparent; padding: 9px; text-align: left; border: 0; border-radius: 8px; color: #202136; font-size: 13px; cursor: pointer; }
+.profile-menu button:hover { background: #f0edff !important; }
+.license-dialog { width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid #586080; border-radius: 18px; background: #14213a; color: white; box-shadow: 0 24px 80px rgba(0,0,0,.4); }
+.license-dialog::backdrop { background: rgba(2,6,23,.7); backdrop-filter: blur(4px); }
+.license-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.license-dialog-heading h2 { margin: 0; font-size: 21px; }
+.license-dialog-heading button { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 8px; color: white; background: transparent; cursor: pointer; }
+@media (max-width: 760px) { .profile-trigger { min-height: 28px; padding: 4px 8px; font-size: 10px; } .profile-trigger svg { width: 14px; height: 14px; } }
+
+/* Alignment and alert messages live inside the video, leaving all space for it. */
+.bay-monitor-camera { grid-template-rows: minmax(0, 1fr); }
+.camera-text-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 16px;
+  padding: clamp(10px, 1.2vw, 20px);
+  padding-top: 38px;
+  background: linear-gradient(transparent, rgba(0,0,0,.82));
+  pointer-events: none;
+  text-shadow: 0 2px 4px #000;
+}
+.camera-text-overlay > div { min-width: 0; display: grid; gap: 4px; }
+.camera-text-overlay span { font-size: clamp(10px, .8vw, 13px); color: #e2e8f0; font-weight: 500; }
+.camera-text-overlay strong { font-size: clamp(13px, 1.25vw, 22px); font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
+.camera-alert-text { text-align: right; }
+@media (max-width: 640px) {
+  .camera-text-overlay { gap: 8px; padding: 10px; padding-top: 28px; }
+  .camera-text-overlay strong { font-size: 12px; }
+}
+
+/* Keep alignment and warnings prominent at the top of each video. */
+.camera-text-overlay {
+  inset: 0 0 auto;
+  align-items: start;
+  padding: clamp(10px, 1.2vw, 18px);
+  gap: 12px;
+  background: linear-gradient(rgba(0,0,0,.8), transparent);
+  padding-bottom: 30px;
+}
+.camera-text-overlay > div {
+  padding: clamp(8px, .9vw, 14px);
+  border-radius: 8px;
+  border: 1px solid rgba(251,191,36,.75);
+  border-left: 4px solid #fbbf24;
+  background: rgba(30,24,8,.9);
+  box-shadow: 0 3px 16px rgba(0,0,0,.35);
+  gap: 5px;
+}
+.camera-text-overlay .camera-alert-text {
+  border-color: rgba(248,113,113,.8);
+  border-right: 4px solid #f87171;
+  border-left-width: 1px;
+  background: rgba(49,13,18,.92);
+}
+.camera-text-overlay span {
+  color: #fef3c7;
+  font-size: clamp(10px, .9vw, 14px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+.camera-text-overlay .camera-alert-text span { color: #fecaca; }
+.camera-text-overlay strong {
+  font-size: clamp(15px, 1.6vw, 27px);
+  font-weight: 800;
+  line-height: 1.25;
+}
+@media (max-width: 640px) {
+  .camera-text-overlay { gap: 6px; padding: 7px; padding-bottom: 20px; }
+  .camera-text-overlay > div { padding: 7px; border-radius: 6px; }
+  .camera-text-overlay strong { font-size: 13px; }
+  .camera-text-overlay span { font-size: 9px; }
+}
+
+/* Detection glow is restricted to the detailed camera view, never bay tiles. */
+.bay-monitor-camera .camera-viewer-viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 6px solid transparent;
+  background: none;
+  box-shadow: none;
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+.bay-monitor-camera .camera-viewer-viewport[data-glow="orange"] { --camera-glow: 249, 158, 11; }
+.bay-monitor-camera .camera-viewer-viewport[data-glow="green"] { --camera-glow: 34, 197, 94; }
+.bay-monitor-camera .camera-viewer-viewport[data-glow="red"] { --camera-glow: 239, 68, 68; }
+.bay-monitor-camera .camera-viewer-viewport:is([data-glow="orange"], [data-glow="green"], [data-glow="red"])::after {
+  border-color: rgb(var(--camera-glow));
+  box-shadow: none;
+  animation: camera-border-flash 1.4s steps(1, end) infinite;
+}
+
+@keyframes camera-border-flash {
+  0%, 100% { border-color: rgb(var(--camera-glow)); }
+  50% { border-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bay-monitor-camera .camera-viewer-viewport::after { animation: none !important; }
+}
+
+/* Outline overlay text for contrast against bright and busy video frames. */
+.camera-text-overlay strong,
+.camera-text-overlay span {
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 4px #000;
+}
+
+.camera-hook-detection { position: absolute; top: 12px; right: 12px; z-index: 2; pointer-events: none; }
+.camera-hook-detection .hook-detection-indicator { background: rgba(8,18,31,.65); }
+.camera-viewer-viewport > .camera-text-overlay { right: 118px; }
+@media (max-width: 760px), (max-height: 600px) {
+  .camera-hook-detection { top: 8px; right: 8px; }
+  .camera-viewer-viewport > .camera-text-overlay { right: 98px; }
+}
+
+/* Place hook detection in its own row below the alert, inside the video. */
+.camera-viewer-viewport > .camera-text-overlay { right: 0; }
+.camera-text-overlay > .camera-hook-detection {
+  position: static;
+  grid-column: 2;
+  justify-self: end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  pointer-events: none;
+}
+.camera-hook-detection .hook-detection-indicator__label {
+  color: var(--hook-detection-color);
+  font: 700 8px/1.2 Geist, system-ui, sans-serif;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+.camera-hook-detection .hook-detection-indicator__check {
+  color: var(--hook-detection-color);
+  font-size: 16px;
+  letter-spacing: normal;
+}
+@media (max-width: 760px), (max-height: 600px) {
+  .camera-hook-detection .hook-detection-indicator__label { font-size: 7px; }
+  .camera-viewer-viewport > .camera-gap-indicator { right: auto; left: 8px; }
+}
+
+.camera-viewer-actions { flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+.camera-zoom { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid rgba(148,163,184,.35); border-radius: 8px; background: rgba(15,23,42,.65); }
+.camera-zoom button { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 3px 5px; border: 0; border-radius: 5px; background: transparent; color: #f8fafc; cursor: pointer; }
+.camera-zoom .camera-zoom__reset { min-width: 54px; font: 600 11px 'Geist Mono', monospace; font-variant-numeric: tabular-nums; }
+.camera-zoom button:disabled { opacity: .4; cursor: default; }
+.camera-zoom button:disabled:hover { background: transparent !important; box-shadow: none; transform: none; }
+@media (max-width: 760px) {
+  .camera-viewer-actions { gap: 5px; }
+  .camera-zoom button { min-width: 26px; height: 27px; }
+  .camera-zoom .camera-zoom__reset { min-width: 48px; font-size: 10px; }
+}
+
+.camera-viewer-viewport[data-pannable="true"] { cursor: grab; touch-action: none; user-select: none; }
+.camera-viewer-viewport[data-pannable="true"][data-dragging="true"] { cursor: grabbing; }

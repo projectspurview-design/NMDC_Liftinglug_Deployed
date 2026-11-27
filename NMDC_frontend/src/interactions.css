@@ -1,0 +1,186 @@
+/* Typography and motion adapted from https://peopleagents.purviewservices.com/.
+   Fonts are served locally; see public/fonts/OFL.txt for their license. */
+@font-face {
+  font-family: Geist;
+  src: url('/fonts/geist-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --focus-ring: #b6a5ff;
+}
+
+body {
+  font-family: Geist, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, select, textarea { font-family: inherit; }
+h1, h2, h3 { letter-spacing: -.03em; }
+.app-header-title { font-weight: 600; letter-spacing: -.035em; }
+.alignment-panel-title { letter-spacing: -.025em; }
+.bay-monitor-transport, .alignment-panel-meta strong,
+.camera-alert-panel time { font-family: 'Geist Mono', monospace; }
+
+.app-header-nav a, button {
+  transition: transform .35s var(--ease-out), background-color .3s,
+    color .25s, box-shadow .3s, border-color .3s;
+}
+
+.app-header-nav a[aria-current='page'] {
+  background: #f0edff !important;
+  color: #5b48c9 !important;
+  border-color: #d9d6ee !important;
+}
+
+.bay-card, .camera-viewer, .alignment-panel, .camera-alert-panel {
+  transition: border-color .3s, box-shadow .35s var(--ease-out),
+    background-color .3s;
+}
+
+.camera-connection-status, .camera-connection-status span,
+.bay-card-camera-heading span {
+  transition: color .25s, background-color .25s;
+}
+
+input, select, textarea {
+  transition: border-color .25s, box-shadow .25s, background-color .25s;
+}
+
+a:focus-visible, button:focus-visible, summary:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(117, 97, 223, .16);
+}
+
+/* Entrance animations run on mount, never on camera or status updates. */
+@keyframes panel-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.dashboard-grid .bay-card {
+  animation: panel-enter .7s var(--ease-out) backwards;
+}
+.dashboard-grid .bay-card:nth-child(2) { animation-delay: .04s; }
+.dashboard-grid .bay-card:nth-child(3) { animation-delay: .08s; }
+.dashboard-grid .bay-card:nth-child(4) { animation-delay: .12s; }
+.dashboard-grid .bay-card:nth-child(5) { animation-delay: .16s; }
+.dashboard-grid .bay-card:nth-child(6) { animation-delay: .20s; }
+.dashboard-grid .bay-card:nth-child(7) { animation-delay: .24s; }
+.dashboard-grid .bay-card:nth-child(8) { animation-delay: .28s; }
+.bay-monitor-heading, .monitor-page-title {
+  animation: panel-enter .7s var(--ease-out) backwards;
+}
+.bay-monitor-camera, .monitor-layout {
+  animation: panel-enter .7s var(--ease-out) .08s backwards;
+}
+.bay-monitor-camera:nth-child(2) { animation-delay: .16s; }
+
+@media (hover: hover) and (pointer: fine) {
+  .app-header-nav a:hover {
+    opacity: 1;
+    color: #5b48c9 !important;
+    background: #f0edff !important;
+    border-color: #d9d6ee !important;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -14px rgba(117, 97, 223, .45);
+  }
+  button:enabled:hover {
+    transform: translateY(-2px);
+    border-color: #b6a5ff !important;
+    box-shadow: 0 12px 30px -10px rgba(117, 97, 223, .4);
+  }
+  .dashboard-grid .bay-card:hover, .dashboard-grid .bay-card:focus-visible {
+    border-color: #b6a5ff !important;
+    box-shadow: inset 0 0 0 1px rgba(182, 165, 255, .35),
+      0 6px 20px -12px rgba(117, 97, 223, .6);
+  }
+  .alignment-panel:hover, .camera-alert-panel:hover {
+    border-color: rgba(182, 165, 255, .5) !important;
+    box-shadow: 0 12px 28px -18px rgba(117, 97, 223, .4);
+  }
+}
+
+.app-header-nav a:active, button:enabled:active {
+  transform: translateY(0);
+  transition-duration: .1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes interface-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heading-accent {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+.workspace-heading { position: relative; }
+.workspace-heading::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 14px;
+  width: min(32%, 170px);
+  height: 1px;
+  background: linear-gradient(90deg, #6ed6ee, transparent);
+  transform-origin: left;
+  pointer-events: none;
+  animation: heading-accent 460ms var(--ease-out) backwards;
+}
+
+.login-mine-content > :is(.login-logo, .login-mine-title, .login-mine-subtitle) {
+  animation: interface-reveal 460ms var(--ease-out) backwards;
+}
+.login-mine-content > .login-mine-title { animation-delay: 55ms; }
+.login-mine-content > .login-mine-subtitle { animation-delay: 110ms; }
+.assistant-panel { animation: interface-reveal 200ms var(--ease-out) backwards; }
+.assistant-message:last-child { animation: interface-reveal 170ms var(--ease-out) backwards; }
+
+.engagement-section-nav a {
+  position: relative;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+.engagement-section-nav a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 10px;
+  bottom: 0;
+  height: 1px;
+  background: #75e4d6;
+  opacity: 0;
+  transform: scaleX(.36);
+  transition: opacity 160ms ease, transform 240ms var(--ease-out);
+}
+.engagement-section-nav a:is([aria-current="page"], :focus-visible)::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .engagement-section-nav a:hover { border-color: #6b9fb4; color: #edfdff; }
+  .engagement-section-nav a:hover::after { opacity: 1; transform: scaleX(1); }
+}

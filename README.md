@@ -33,6 +33,7 @@ Voice alerts are spoken in Hindi. The detector accepts both the legacy model lab
 - `hook_detector/tts.py` speaks alarms and notifications
 - `hook_detector/stream.py` manages RTSP/video/camera capture and visualization
 - `app.py` is the main runtime entry point
+- `NMDC_frontend/` contains the browser application; FastAPI serves its production build from `NMDC_frontend/dist`
 - `train.py` is provided to train a new YOLO model on lifting-hook/lifting-lug data
 
 ## Step-by-step Process
@@ -82,7 +83,7 @@ Voice alerts are spoken in Hindi. The detector accepts both the legacy model lab
    python app.py --host 127.0.0.1 --port 8001
    ```
 
-7. Open `http://127.0.0.1:8002/docs` to inspect and test the FastAPI endpoints. The backend routes use port 8001; the API server and its interactive docs use port 8002. Configure cameras through the backend camera-admin routes documented below.
+7. Open `http://127.0.0.1:8002/` to use the frontend application. The backend routes use port 8001; FastAPI serves the frontend and API on port 8002. The interactive API docs remain available at `http://127.0.0.1:8002/docs`.
 
 ## Environment Setup
 
@@ -103,15 +104,15 @@ Voice alerts are spoken in Hindi. The detector accepts both the legacy model lab
 
 ## Linux Desktop Launch
 
-From the project folder, install the desktop launcher and its dependencies:
+From the project folder, install the desktop launcher, frontend build, and its dependencies:
 
 ```bash
 sh install_linux.sh
 ```
 
-The installer adds **NMDC Lifting Hook Detector** to the applications menu and creates `nmdc-hook-detector.desktop` in the configured Linux Desktop folder. Before the first launch, create an Admin with `./.venv-linux/bin/python app.py --bootstrap-admin`. Then search for the app or double-click the desktop icon. A terminal window stays open while the detector runs; closing it stops the app. The browser opens the interactive API docs automatically. The usual address is `http://localhost:8002/docs`; if either backend port is occupied, the launcher selects another available pair.
+The installer builds the frontend and adds **NMDC Lifting Hook Detector** to the applications menu and creates `nmdc-hook-detector.desktop` in the configured Linux Desktop folder. Before the first launch, create an Admin with `./.venv-linux/bin/python app.py --bootstrap-admin`. The desktop launcher prefers the project `.venv` when it contains the DEEPX `dx_engine` runtime, then checks `.venv-linux`; set `NMDC_PYTHON` in `~/.config/nmdc-hook-detector/environment` to select another runtime explicitly. Then search for the app or double-click the desktop icon. A terminal window stays open while the detector runs; closing it stops the app. The browser opens the application automatically at `http://localhost:8005/`; the API docs remain at `http://localhost:8005/docs`. If either backend port is occupied, the launcher selects another available pair. Configure a camera after signing in if no camera is attached to the default USB input.
 
-On Linux, installation downloads the Hindi Piper voice model and the backend speaks detection alerts through the system's default audio output. To route Piper audio directly to a PulseAudio or PipeWire sink, set `export NMDC_HOOK_AUDIO_SINK="bluez_output.AF:6A:EA:15:50:F6"` in `~/.config/nmdc-hook-detector/environment`. Set `export NMDC_HOOK_PORT="8001"` to choose a preferred backend port.
+On Linux, installation downloads the Hindi Piper voice model and the backend speaks detection alerts through the system's default audio output. To route Piper audio directly to a PulseAudio or PipeWire sink, set `export NMDC_HOOK_AUDIO_SINK="bluez_output.AF:6A:EA:15:50:F6"` in `~/.config/nmdc-hook-detector/environment`. Set `export NMDC_HOOK_PORT="8004"` to choose a preferred backend port (the frontend runs on the next port, `8005`).
 
 ## Backend Camera Configuration
 
